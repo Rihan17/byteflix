@@ -115,4 +115,10 @@ O `settings.py` funciona nos dois ambientes: localmente continua igual; no Rende
    `set DATABASE_URL=...` e depois `python manage.py migrate` e `python manage.py createsuperuser`.
 
 Sem `SUPABASE_BUCKET`, as imagens ficam na pasta `media/` (uso local). No Render isso não funciona:
-o disco é temporário e a pasta `media/` não é servida. O e-mail de recuperação de senha só aparece nos logs.
+o disco é temporário e a pasta `media/` não é servida.
+
+E-mail de recuperação de senha: sem `BREVO_API_KEY`, o e-mail só aparece no console/logs. O Render Free
+bloqueia SMTP (portas 25, 465 e 587), então o envio real usa a API da Brevo (brevo.com, plano gratuito):
+crie uma conta, valide um remetente em **Senders, Domains & Dedicated IPs → Senders**, gere uma chave
+**v3** em **SMTP & API → API Keys** e cadastre no Render `BREVO_API_KEY` (a chave) e
+`DEFAULT_FROM_EMAIL` (o remetente validado, ex.: `ByteFix <seuemail@gmail.com>`).

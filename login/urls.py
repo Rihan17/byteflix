@@ -15,15 +15,19 @@ urlpatterns = [
     path("cadastro/", views.cadastro, name='cadastro'),
 
     path("esqueci-senha/",
-         auth_views.PasswordResetView.as_view(),
+         auth_views.PasswordResetView.as_view(
+             template_name="password_reset_form.html",
+             email_template_name="email_redefinir_senha.txt",
+             subject_template_name="email_redefinir_assunto.txt",
+         ),
          name="password_reset"),
     path("esqueci-senha/enviado/",
-         auth_views.PasswordResetDoneView.as_view(),
+         auth_views.PasswordResetDoneView.as_view(template_name="password_reset_done.html"),
          name="password_reset_done"),
     path("resetar-senha/<uidb64>/<token>/",
-         auth_views.PasswordResetConfirmView.as_view(),
+         auth_views.PasswordResetConfirmView.as_view(template_name="password_reset_confirm.html"),
          name="password_reset_confirm"),
     path("resetar-senha/concluido/",
-         auth_views.PasswordResetCompleteView.as_view(),
+         auth_views.PasswordResetCompleteView.as_view(template_name="password_reset_complete.html"),
          name="password_reset_complete"),
 ]

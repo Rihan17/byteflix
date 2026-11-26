@@ -166,8 +166,18 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'ByteFix Assistência Técnica <no-reply@bytefix.local>'
+BREVO_API_KEY = os.environ.get('BREVO_API_KEY')
+
+if BREVO_API_KEY:
+    EMAIL_BACKEND = 'anymail.backends.brevo.EmailBackend'
+    ANYMAIL = {'BREVO_API_KEY': BREVO_API_KEY}
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+DEFAULT_FROM_EMAIL = os.environ.get(
+    'DEFAULT_FROM_EMAIL',
+    'ByteFix Assistência Técnica <no-reply@bytefix.local>',
+)
 
 # Rotas utilizadas durante a autenticação
 LOGIN_URL = "/login/"

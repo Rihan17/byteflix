@@ -1,0 +1,11 @@
+{% autoescape off %}Olá, {{ user.get_username }}!
+
+Recebemos um pedido para redefinir a senha da sua conta na ByteFix.
+
+Para criar uma nova senha, acesse o link abaixo:
+{{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}
+
+O link é válido por 3 dias. Se você não fez esse pedido, ignore este e-mail: sua senha continuará a mesma.
+
+Equipe ByteFix Assistência Técnica
+{% endautoescape %}
