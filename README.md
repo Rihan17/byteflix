@@ -88,3 +88,22 @@ Perfil.objects.create(usuario=u, tipo_usuario="administrador")
 - Os dados de exemplo de Categoria/Serviço foram atualizados para refletir o
   tema de assistência técnica (ex.: "Troca de Tela de Notebook", "Upgrade de
   Memória RAM").
+
+## Deploy no Render
+
+Arquivos já preparados: `build.sh`, `requirements.txt` (com gunicorn, whitenoise,
+dj-database-url e psycopg2-binary), `.gitignore`, `.gitattributes` e `.env.example`.
+O `settings.py` funciona nos dois ambientes: localmente continua igual; no Render
+(que define a variável `RENDER` sozinho) ele desliga o DEBUG e lê as variáveis de ambiente.
+
+1. Suba o projeto para o GitHub (o `.env` fica de fora pelo `.gitignore`).
+2. No Render: **New → Web Service**, conecte o repositório.
+3. **Build Command:** `bash build.sh`
+4. **Start Command:** `gunicorn projeto.wsgi:application`
+5. Em **Environment**, crie: `SECRET_KEY` (texto longo e aleatório), `SUPABASE_URL`, `SUPABASE_KEY`.
+   (Opcional: `DATABASE_URL` do PostgreSQL do Render; sem ela o projeto usa SQLite.)
+6. Depois do deploy, no **Shell** do Render: `python manage.py createsuperuser`.
+
+Limitações: o disco do Render é temporário — com SQLite, usuários, pedidos e imagens
+enviadas (`media/`) são perdidos a cada novo deploy/reinício; imagens enviadas também
+não são servidas com DEBUG desligado. O e-mail de recuperação de senha só aparece nos logs.

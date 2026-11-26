@@ -1,2 +1,2 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Garante que o build.sh use quebra de linha do Linux (LF), mesmo editado no Windows
+*.sh text eol=lf

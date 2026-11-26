@@ -1,0 +1,14 @@
+# Credenciais: nunca subir
+.env
+
+# Ambiente virtual e caches do Python
+venv/
+__pycache__/
+*.pyc
+
+# Arquivos gerados pelo collectstatic
+staticfiles/
+
+# Banco e uploads locais.
+db.sqlite3
+media/
