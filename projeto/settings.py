@@ -17,11 +17,8 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Lê o arquivo .env (usado só no computador; no Render as variáveis são
-# cadastradas direto no painel).
 load_dotenv(BASE_DIR / '.env')
 
-# O Render define a variável RENDER automaticamente; localmente ela não existe.
 EM_PRODUCAO = 'RENDER' in os.environ
 
 
@@ -29,7 +26,6 @@ EM_PRODUCAO = 'RENDER' in os.environ
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# Em produção, defina SECRET_KEY nas variáveis de ambiente do Render.
 SECRET_KEY = os.environ.get(
     'SECRET_KEY',
     'django-insecure-_0#0pm4eku6^0v19!w)v87y4tn3aot!esvy^&uqeaps40%5=b1'
@@ -46,7 +42,6 @@ if RENDER_EXTERNAL_HOSTNAME:
     CSRF_TRUSTED_ORIGINS = [f'https://{RENDER_EXTERNAL_HOSTNAME}']
 
 if EM_PRODUCAO:
-    # O Render termina o HTTPS antes de chegar no Django.
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
@@ -68,7 +63,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # serve o CSS/estáticos em produção
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -108,8 +103,6 @@ DATABASES = {
     }
 }
 
-# Se a variável DATABASE_URL existir (ex.: PostgreSQL do Render), ela substitui
-# o SQLite. Sem ela, continua usando o db.sqlite3 local.
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
     import dj_database_url
@@ -153,7 +146,6 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-# Pasta onde o collectstatic junta todos os estáticos (usada em produção)
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 if EM_PRODUCAO:
@@ -166,11 +158,6 @@ if EM_PRODUCAO:
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-
-# Email
-# https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
-# Em desenvolvimento, os e-mails (ex.: recuperação de senha) são impressos no
-# console em vez de enviados de verdade.
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'ByteFix Assistência Técnica <no-reply@bytefix.local>'

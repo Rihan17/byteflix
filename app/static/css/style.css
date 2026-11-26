@@ -1,9 +1,8 @@
 :root{
-    /* Paleta "Azul Tecnologia" */
-    --azul-escuro: #0b2e4e;   /* azul marinho (cabeçalho, títulos) */
-    --azul: #1565c0;          /* azul principal (botões, links) */
-    --azul-claro: #2e9bf0;    /* azul claro de destaque (CTA, hero) */
-    --azul-bg: #e5f1fb;       /* azul bem claro (fundos suaves, tags) */
+    --azul-escuro: #0b2e4e;
+    --azul: #1565c0;
+    --azul-claro: #2e9bf0;
+    --azul-bg: #e5f1fb;
     --cinza-bg: #f3f6f9;
     --texto: #1f2a33;
     --borda: #d7e3ec;
@@ -43,7 +42,6 @@ img{
     max-width: 100%;
 }
 
-/* ---------- Cabeçalho ---------- */
 header.navbar{
     display: flex;
     justify-content: space-between;
@@ -107,7 +105,6 @@ header.navbar nav button.btn-sair:hover{
     background: rgba(255,255,255,.12);
 }
 
-/* ---------- Layout geral ---------- */
 main{
     flex: 1;
     padding: 32px 20px 60px;
@@ -129,7 +126,6 @@ p.subtitulo-pagina{
     margin-bottom: 28px;
 }
 
-/* ---------- Botões ---------- */
 .btn{
     display: inline-block;
     padding: 10px 20px;
@@ -171,7 +167,6 @@ p.subtitulo-pagina{
     width: 100%;
 }
 
-/* ---------- Hero (Home) ---------- */
 .hero{
     background: linear-gradient(135deg, var(--azul-escuro), var(--azul));
     color: white;
@@ -203,7 +198,6 @@ p.subtitulo-pagina{
     margin-bottom: 18px;
 }
 
-/* ---------- Grids de cards ---------- */
 .cards-grid{
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -232,7 +226,6 @@ p.subtitulo-pagina{
     font-size: 0.9rem;
 }
 
-/* cards de produto/serviço com imagem */
 .produto-card{
     background: white;
     border-radius: 10px;
@@ -270,7 +263,6 @@ p.subtitulo-pagina{
     color: var(--azul);
 }
 
-/* ---------- Dashboard ---------- */
 .dashboard-topo{
     background: var(--azul-escuro);
     color: white;
@@ -296,7 +288,6 @@ p.subtitulo-pagina{
     margin-bottom: 6px;
 }
 
-/* ---------- Estatísticas ---------- */
 .stat-grid{
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -320,7 +311,6 @@ p.subtitulo-pagina{
     color: #5c6b64;
 }
 
-/* ---------- Badges ---------- */
 .badge{
     display: inline-block;
     padding: 3px 10px;
@@ -337,7 +327,6 @@ p.subtitulo-pagina{
     color: #777;
 }
 
-/* ---------- Filtros ---------- */
 .filtros{
     background: white;
     border: 1px solid var(--borda);
@@ -366,7 +355,6 @@ p.subtitulo-pagina{
     max-width: 100%;
 }
 
-/* ---------- Tabelas ---------- */
 .table-wrapper{
     overflow-x: auto;
     border-radius: 10px;
@@ -399,7 +387,6 @@ td img{
     gap: 6px;
 }
 
-/* ---------- Formulários ---------- */
 .form-card{
     max-width: 520px;
     margin: 0 auto;
@@ -495,7 +482,6 @@ form.form-padrao button[type="submit"]{
     cursor: pointer;
 }
 
-/* ---------- Mensagens (django.contrib.messages) ---------- */
 .mensagens{
     max-width: 1100px;
     margin: 18px auto 0;
@@ -518,7 +504,6 @@ form.form-padrao button[type="submit"]{
     border: 1px solid #f4c3bf;
 }
 
-/* ---------- Equipe / Quem Somos ---------- */
 .equipe-card{
     background: white;
     border-radius: 10px;
@@ -554,7 +539,6 @@ form.form-padrao button[type="submit"]{
     color: #5c6b64;
 }
 
-/* ---------- Rodapé ---------- */
 footer.rodape{
     text-align: center;
     padding: 20px;
@@ -562,7 +546,6 @@ footer.rodape{
     font-size: 0.85rem;
 }
 
-/* ---------- Diversos ---------- */
 .aviso{
     background: #fff6e0;
     border: 1px solid #f3e2a3;

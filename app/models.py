@@ -40,14 +40,6 @@ class Contato(models.Model):
 
 
 class Pedido(models.Model):
-    """
-    Registro de uma compra feita por um cliente logado.
-
-    Pode ser:
-    - um serviço/produto do banco local (campo `servico` preenchido), ou
-    - um produto vindo da API externa (campos `produto_*` preenchidos, já
-      que esses produtos não existem numa tabela local).
-    """
     ORIGEM_LOCAL = 'local'
     ORIGEM_API = 'api'
     ORIGEM_CHOICES = [
@@ -59,8 +51,6 @@ class Pedido(models.Model):
     servico = models.ForeignKey(Servico, on_delete=models.CASCADE, related_name='pedidos', null=True, blank=True)
     origem = models.CharField(max_length=10, choices=ORIGEM_CHOICES, default=ORIGEM_LOCAL)
 
-    # Preenchidos só quando origem == 'api': guardam uma "foto" dos dados do
-    # produto no momento da compra, já que o produto vem de fora do banco.
     produto_nome = models.CharField(max_length=200, blank=True)
     produto_preco = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     produto_imagem_url = models.URLField(max_length=500, blank=True)

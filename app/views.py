@@ -4,8 +4,33 @@ from django.contrib import messages
 from .models import Contato, Servico, Categoria, Pedido
 from .forms import FormContato, FormServico
 from .supabase_client import supabase
+import logging
 import requests
 from django.db.models import Count
+
+logger = logging.getLogger(__name__)
+
+API_LOJA = "https://fakestoreapi.com/products"
+CABECALHOS_API = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                  "(KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+    "Accept": "application/json",
+}
+
+
+def _api_loja(caminho=""):
+    ultimo_erro = None
+    for tentativa in (1, 2):
+        try:
+            resposta = requests.get(f"{API_LOJA}{caminho}", headers=CABECALHOS_API, timeout=8)
+            resposta.raise_for_status()
+            return resposta.json()
+        except (requests.RequestException, ValueError) as erro:
+            ultimo_erro = erro
+            logger.error("FakeStore API falhou (%s, tentativa %s): %s: %s",
+                         caminho or "/products", tentativa, type(erro).__name__, erro)
+    raise requests.RequestException(str(ultimo_erro))
+
 
 # Create your views here.
 def index(request):
@@ -13,7 +38,6 @@ def index(request):
 
 
 def quem_somos(request):
-    """Página institucional pública. A equipe vem do Supabase (banco remoto)."""
     integrantes = []
     erro_supabase = False
     try:
@@ -98,17 +122,12 @@ def servicos(request):
 
 
 def produtos(request):
-    """Vitrine pública: serviços/produtos do banco local + produtos de uma API externa."""
     produtos_locais = Servico.objects.filter(ativo=True).exclude(preco=0)
 
-    # Requisição da API externa (FakeStore). Se a API estiver fora do ar,
-    # a página continua funcionando só com os produtos locais.
     produtos_api = []
     erro_api = False
     try:
-        resposta = requests.get("https://fakestoreapi.com/products", timeout=5)
-        resposta.raise_for_status()
-        produtos_api = resposta.json()
+        produtos_api = _api_loja()
     except requests.RequestException:
         erro_api = True
 
@@ -130,7 +149,6 @@ def _salvar_carrinho(request, carrinho):
 
 @login_required
 def adicionar_carrinho_local(request, id_servico):
-    """Adiciona um produto/serviço local ao carrinho do usuário logado."""
     servico = get_object_or_404(Servico, id=id_servico, ativo=True)
 
     carrinho = _get_carrinho(request)
@@ -148,12 +166,6 @@ def adicionar_carrinho_local(request, id_servico):
 
 @login_required
 def adicionar_carrinho_api(request, produto_id):
-    """
-    Adiciona um produto da API externa (FakeStore) ao carrinho. Os dados
-    (nome, preço, imagem) são buscados na API no momento em que o item é
-    adicionado, e ficam guardados no carrinho (sessão) pra não precisar bater
-    na API de novo toda vez que a página do carrinho for aberta.
-    """
     carrinho = _get_carrinho(request)
     chave = f"api-{produto_id}"
 
@@ -161,9 +173,7 @@ def adicionar_carrinho_api(request, produto_id):
         carrinho[chave]["quantidade"] += 1
     else:
         try:
-            resposta = requests.get(f"https://fakestoreapi.com/products/{produto_id}", timeout=5)
-            resposta.raise_for_status()
-            produto = resposta.json()
+            produto = _api_loja(f"/{produto_id}")
         except requests.RequestException:
             messages.error(request, "Não foi possível adicionar esse produto ao carrinho agora. Tente novamente mais tarde.")
             return redirect('produtos')
@@ -196,7 +206,6 @@ def remover_carrinho(request, chave):
 
 @login_required
 def carrinho(request):
-    """Mostra os itens do carrinho antes de finalizar a compra."""
     carrinho_sessao = _get_carrinho(request)
     itens = []
     total = 0
@@ -206,7 +215,6 @@ def carrinho(request):
         if item["origem"] == Pedido.ORIGEM_LOCAL:
             servico = Servico.objects.filter(id=item["id"], ativo=True).first()
             if not servico:
-                # o serviço foi removido/desativado depois de entrar no carrinho
                 carrinho_sessao.pop(chave, None)
                 carrinho_alterado = True
                 continue
@@ -242,7 +250,6 @@ def carrinho(request):
 
 @login_required
 def finalizar_compra(request):
-    """Confirma os itens do carrinho e registra cada um em Meus Pedidos."""
     if request.method != "POST":
         return redirect('carrinho')
 
@@ -267,11 +274,8 @@ def finalizar_compra(request):
                 Pedido.objects.create(usuario=request.user, servico=servico, origem=Pedido.ORIGEM_LOCAL)
                 pedidos_criados += 1
         else:
-            # revalida o preço na API antes de confirmar, pra evitar preço desatualizado
             try:
-                resposta = requests.get(f"https://fakestoreapi.com/products/{item['id']}", timeout=5)
-                resposta.raise_for_status()
-                produto = resposta.json()
+                produto = _api_loja(f"/{item['id']}")
             except requests.RequestException:
                 pendentes[chave] = item
                 continue

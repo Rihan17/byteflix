@@ -14,9 +14,6 @@ urlpatterns = [
 
     path("cadastro/", views.cadastro, name='cadastro'),
 
-    # Recuperação de senha: usa o mecanismo nativo do Django (sem template_name
-    # definido, por isso ele aproveita os templates padrão que já vêm prontos
-    # dentro do django.contrib.admin).
     path("esqueci-senha/",
          auth_views.PasswordResetView.as_view(),
          name="password_reset"),

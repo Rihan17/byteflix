@@ -11,10 +11,12 @@ from .models import Perfil
 def dashboard(request):
     perfil, _ = Perfil.objects.get_or_create(
         usuario=request.user,
-        defaults={'tipo_usuario': 'cliente'}
+        defaults={
+            'tipo_usuario': 'administrador' if request.user.is_superuser else 'cliente'
+        }
     )
 
-    if perfil.tipo_usuario == 'administrador':
+    if perfil.tipo_usuario == 'administrador' or request.user.is_superuser:
         return redirect("/admin/")
 
     return render(request, "dashboard.html", {"perfil": perfil})
