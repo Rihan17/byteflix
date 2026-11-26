@@ -100,10 +100,19 @@ O `settings.py` funciona nos dois ambientes: localmente continua igual; no Rende
 2. No Render: **New → Web Service**, conecte o repositório.
 3. **Build Command:** `bash build.sh`
 4. **Start Command:** `gunicorn projeto.wsgi:application`
-5. Em **Environment**, crie: `SECRET_KEY` (texto longo e aleatório), `SUPABASE_URL`, `SUPABASE_KEY`.
-   (Opcional: `DATABASE_URL` do PostgreSQL do Render; sem ela o projeto usa SQLite.)
-6. Depois do deploy, no **Shell** do Render: `python manage.py createsuperuser`.
+5. Em **Environment**, crie: `SECRET_KEY` (texto longo e aleatório), `SUPABASE_URL`, `SUPABASE_KEY`,
+   `DATABASE_URL` (string "Session pooler" do Supabase, com a senha do banco) e `SUPABASE_BUCKET`
+   (nome do bucket das imagens, ex.: `produtos`).
+6. Imagens: no Supabase, em **Storage**, crie um bucket **público** com o mesmo nome de `SUPABASE_BUCKET`
+   e, em **SQL Editor**, rode:
+   ```sql
+   create policy "produtos_upload" on storage.objects for insert to anon
+     with check (bucket_id = 'produtos');
+   create policy "produtos_delete" on storage.objects for delete to anon
+     using (bucket_id = 'produtos');
+   ```
+7. O Render Free não tem Shell: crie o administrador no seu computador, apontando para o banco do Supabase:
+   `set DATABASE_URL=...` e depois `python manage.py migrate` e `python manage.py createsuperuser`.
 
-Limitações: o disco do Render é temporário — com SQLite, usuários, pedidos e imagens
-enviadas (`media/`) são perdidos a cada novo deploy/reinício; imagens enviadas também
-não são servidas com DEBUG desligado. O e-mail de recuperação de senha só aparece nos logs.
+Sem `SUPABASE_BUCKET`, as imagens ficam na pasta `media/` (uso local). No Render isso não funciona:
+o disco é temporário e a pasta `media/` não é servida. O e-mail de recuperação de senha só aparece nos logs.

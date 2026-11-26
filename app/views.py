@@ -293,13 +293,10 @@ def finalizar_compra(request):
             servico = Servico.objects.filter(id=item["id"], ativo=True).first()
             if not servico:
                 pendentes[chave] = item
+                continue
             for _ in range(quantidade):
-                 Pedido.objects.create(
-                     usuario=request.user,
-                     servico=servico,
-                     origem=Pedido.ORIGEM_LOCAL
-                )
-            pedidos_criados += 1
+                Pedido.objects.create(usuario=request.user, servico=servico, origem=Pedido.ORIGEM_LOCAL)
+                pedidos_criados += 1
         else:
             try:
                 produto = _api_loja(f"/{item['id']}")
