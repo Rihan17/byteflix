@@ -1,0 +1,35 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Meu Perfil | ByteFix{% endblock %}
+
+{% block conteudo %}
+    <div class="form-card">
+        <h2>Meu Perfil</h2>
+        <p class="form-sub">Consulte e atualize seus dados pessoais e mantenha-os sempre atualizados.</p>
+
+        <form method="post" class="form-padrao">
+            {% csrf_token %}
+
+            <label>Nome:</label>
+            <input type="text" name="nome" value="{{ user.first_name }}">
+
+            <label>Sobrenome:</label>
+            <input type="text" name="sobrenome" value="{{ user.last_name }}">
+
+            <label>E-mail:</label>
+            <input type="email" name="email" value="{{ user.email }}">
+
+            <button type="submit" class="btn btn-primary btn-block" style="margin-top:14px;">Salvar Alterações</button>
+        </form>
+
+        <hr style="margin:22px 0; border:none; border-top:1px solid var(--borda);">
+
+        <p style="text-align:center;">
+            <a href="{% url 'alterar_senha' %}">Alterar senha &rarr;</a>
+        </p>
+
+        <div class="form-rodape">
+            <a href="{% url 'dashboard' %}">&larr; Voltar ao dashboard</a>
+        </div>
+    </div>
+{% endblock %}

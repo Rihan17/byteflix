@@ -1,0 +1,39 @@
+{% extends "template.html" %}
+
+{% block titulo %}Editar Integrante | ByteFix{% endblock %}
+
+{% block conteudo %}
+    <div class="form-card">
+        <h2>Editar Integrante</h2>
+        <p class="form-sub">Atualize as informações do integrante da equipe.</p>
+
+        {% if integrante %}
+        <form method="POST" class="form-padrao">
+            {% csrf_token %}
+
+            <label for="nome">Nome completo:</label>
+            <input type="text" name="nome" id="nome" value="{{ integrante.nome }}" required>
+
+            <label for="cargo">Cargo:</label>
+            <input type="text" name="cargo" id="cargo" value="{{ integrante.cargo }}" required>
+
+            <label for="biografia">Biografia:</label>
+            <textarea name="biografia" id="biografia" rows="4" required>{{ integrante.biografia }}</textarea>
+
+            <label for="foto">Foto (URL):</label>
+            <input type="url" name="foto" id="foto" value="{{ integrante.foto_url }}">
+
+            {% if integrante.foto_url %}
+                <img src="{{ integrante.foto_url }}" alt="Foto atual" width="90" style="border-radius:50%; margin:10px 0;">
+            {% endif %}
+
+            <button type="submit" class="btn btn-primary btn-block" style="margin-top:14px;">Salvar Alterações</button>
+        </form>
+        {% else %}
+            <p class="vazio">Integrante não encontrado.</p>
+        {% endif %}
+        <div class="form-rodape">
+            <a href="{% url 'integrantes' %}">Cancelar</a>
+        </div>
+    </div>
+{% endblock %}

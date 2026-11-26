@@ -1,0 +1,19 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Fale Conosco | ByteFix{% endblock %}
+
+{% block conteudo %}
+    <div class="form-card">
+        <h2>Entre em contato</h2>
+        <p class="form-sub">
+            Tem dúvida, sugestão ou solicitação? Preencha o formulário abaixo e nossa equipe
+            responde o quanto antes.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form }}
+            <button type="submit">Enviar mensagem</button>
+        </form>
+    </div>
+{% endblock %}

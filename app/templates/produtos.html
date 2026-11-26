@@ -1,0 +1,77 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Produtos | ByteFix{% endblock %}
+
+{% block conteudo %}
+
+    <h2 class="titulo-pagina">Produtos e Serviços</h2>
+    <p class="subtitulo-pagina">Confira nossos serviços próprios e os produtos dos nossos parceiros.</p>
+
+    <section class="secao">
+        <h3>Nossos Serviços e Peças</h3>
+        <div class="cards-grid">
+            {% for produto in produtos %}
+                <div class="produto-card">
+                    {% if produto.imagem %}
+                        <img class="produto-imagem" src="{{ produto.imagem.url }}" alt="{{ produto.nome }}">
+                    {% else %}
+                        <img class="produto-imagem" src="https://api.dicebear.com/7.x/icons/svg?seed={{ produto.nome }}" alt="{{ produto.nome }}">
+                    {% endif %}
+                    <div class="produto-corpo">
+                        <h4>{{ produto.nome }}</h4>
+                        <p class="descricao">{{ produto.descricao }}</p>
+                        <p class="preco">R$ {{ produto.preco }}</p>
+
+                        {% if user.is_authenticated %}
+                            <form method="post" action="{% url 'adicionar_carrinho_local' produto.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary btn-block">Adicionar ao carrinho</button>
+                            </form>
+                        {% else %}
+                            <a class="btn btn-outline btn-block" href="{% url 'login' %}">Entrar para comprar</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <p class="vazio">Nenhum serviço disponível no momento.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="secao">
+        <h3>Produtos de Lojas Parceiras</h3>
+
+        {% if erro_api %}
+            <div class="aviso">
+                Não foi possível carregar os produtos das lojas parceiras agora. Tente novamente mais tarde.
+            </div>
+        {% endif %}
+
+        <div class="cards-grid">
+            {% for prod in produtos_api %}
+                <div class="produto-card">
+                    <img class="produto-imagem" src="{{ prod.image }}" alt="{{ prod.title }}">
+                    <div class="produto-corpo">
+                        <h4>{{ prod.title }}</h4>
+                        <p class="descricao">{{ prod.description|truncatewords:18 }}</p>
+                        <p class="preco">R$ {{ prod.price }}</p>
+
+                        {% if user.is_authenticated %}
+                            <form method="post" action="{% url 'adicionar_carrinho_api' prod.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary btn-block">Adicionar ao carrinho</button>
+                            </form>
+                        {% else %}
+                            <a class="btn btn-outline btn-block" href="{% url 'login' %}">Entrar para comprar</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                {% if not erro_api %}
+                    <p class="vazio">Nenhum produto encontrado na loja parceira.</p>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+
+{% endblock %}

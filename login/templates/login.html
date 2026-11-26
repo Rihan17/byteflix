@@ -1,0 +1,23 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Entrar | ByteFix{% endblock %}
+
+{% block conteudo %}
+    <div class="form-card">
+        <h2>Bem-vindo de volta!</h2>
+        <p class="form-sub">Acesse sua conta para continuar utilizando nossa plataforma.</p>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Entrar">
+        </form>
+
+        <div class="form-rodape">
+            <a href="{% url 'password_reset' %}">Esqueceu sua senha?</a>
+        </div>
+        <div class="form-rodape">
+            Não tem uma conta? <a href="{% url 'cadastro' %}">Cadastre-se</a>
+        </div>
+    </div>
+{% endblock %}

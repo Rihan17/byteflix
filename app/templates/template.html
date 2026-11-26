@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}ByteFix Assistência Técnica{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=4">
+</head>
+<body>
+    <header class="navbar">
+        <a class="logo" href="{% url 'index' %}">Byte<span>Fix</span></a>
+        <nav>
+            <a href="{% url 'quem_somos' %}">Quem Somos</a>
+            <a href="{% url 'produtos' %}">Produtos</a>
+            <a href="{% url 'add_contato' %}">Contato</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'carrinho' %}">Carrinho{% if carrinho_quantidade %} ({{ carrinho_quantidade }}){% endif %}</a>
+                <a class="btn-dashboard" href="{% url 'dashboard' %}">Dashboard</a>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-sair">Sair</button>
+                </form>
+            {% else %}
+                <a class="btn-entrar" href="{% url 'login' %}">Entrar</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    {% if messages %}
+        <div class="mensagens">
+            {% for message in messages %}
+                <div class="mensagem {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <main>
+        {% block conteudo %}
+        {% endblock %}
+    </main>
+
+    <footer class="rodape">
+        &copy; {% now "Y" %} ByteFix Assistência Técnica. Todos os direitos reservados.
+    </footer>
+</body>
+</html>

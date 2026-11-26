@@ -1,0 +1,56 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Meus Pedidos | ByteFix{% endblock %}
+
+{% block conteudo %}
+
+    <h2 class="titulo-pagina">Meus Pedidos</h2>
+    <p class="subtitulo-pagina">Acompanhe os serviços e produtos que você adquiriu.</p>
+
+    <p style="margin-bottom:18px;">
+        <a class="btn btn-outline" href="{% url 'produtos' %}">Continuar comprando</a>
+    </p>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Produto / Serviço</th>
+                    <th>Origem</th>
+                    <th>Preço</th>
+                    <th>Comprado em</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pedido in pedidos %}
+                    <tr>
+                        <td>{{ pedido.nome }}</td>
+                        <td>
+                            {% if pedido.origem == 'api' %}
+                                <span class="badge badge-inativo">Loja parceira</span>
+                            {% else %}
+                                <span class="badge badge-ativo">ByteFix</span>
+                            {% endif %}
+                        </td>
+                        <td>R$ {{ pedido.preco }}</td>
+                        <td>{{ pedido.criado_em|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="4" class="vazio">Você ainda não fez nenhum pedido.</td></tr>
+                {% endfor %}
+            </tbody>
+            {% if pedidos %}
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="total-destaque">Total das compras: R$ {{ total }}</td>
+                </tr>
+            </tfoot>
+            {% endif %}
+        </table>
+    </div>
+
+    <p style="margin-top:20px;">
+        <a href="{% url 'dashboard' %}">&larr; Voltar ao dashboard</a>
+    </p>
+
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Gerenciar Serviços | ByteFix{% endblock %}
+
+{% block conteudo %}
+
+    <h2 class="titulo-pagina">Gerenciamento de Serviços</h2>
+    <p class="subtitulo-pagina">Cadastre, consulte, edite e remova os serviços e peças oferecidos.</p>
+
+    <p style="text-align:right; margin-bottom: 16px;">
+        <a class="btn btn-primary" href="{% url 'addServicos' %}">+ Novo Serviço</a>
+    </p>
+
+    <div class="stat-grid">
+        <div class="stat-box">
+            <div class="valor">{{ total_servicos }}</div>
+            <div class="rotulo">Serviço(s) encontrados</div>
+        </div>
+        {% if mais_barato %}
+        <div class="stat-box">
+            <div class="valor">R$ {{ mais_barato.preco }}</div>
+            <div class="rotulo">Menor preço</div>
+        </div>
+        {% endif %}
+        {% if mais_caro %}
+        <div class="stat-box">
+            <div class="valor">R$ {{ mais_caro.preco }}</div>
+            <div class="rotulo">Maior preço</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="filtros">
+        <h4>Buscar</h4>
+        <form method="GET" class="filtro-grupo">
+            <input type="text" name="busca" placeholder="Digite o nome do serviço" value="{{ busca|default:'' }}">
+            <button type="submit" class="btn btn-primary btn-sm">Buscar</button>
+        </form>
+
+        <h4>Filtrar por categoria</h4>
+        <div class="filtro-grupo">
+            {% for categoria_item in categorias %}
+                <a class="btn btn-outline btn-sm" href="?categoria={{ categoria_item.id }}">{{ categoria_item.nome }}</a>
+            {% endfor %}
+        </div>
+
+        <h4>Filtrar por preço</h4>
+        <div class="filtro-grupo">
+            <a class="btn btn-outline btn-sm" href="?preco=baixo">Até R$ 500</a>
+            <a class="btn btn-outline btn-sm" href="?preco=medio">R$ 500 a R$ 1.500</a>
+            <a class="btn btn-outline btn-sm" href="?preco=alto">Acima de R$ 1.500</a>
+        </div>
+
+        <h4>Ordenar</h4>
+        <div class="filtro-grupo">
+            <a class="btn btn-outline btn-sm" href="?ordem=menor">Menor preço</a>
+            <a class="btn btn-outline btn-sm" href="?ordem=maior">Maior preço</a>
+            <a class="btn btn-outline btn-sm" href="?ordem=nome">Nome</a>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Imagem</th>
+                    <th>Serviço</th>
+                    <th>Descrição</th>
+                    <th>Preço</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for servico in servicos %}
+                <tr>
+                    <td>{% if servico.imagem %}<img src="{{ servico.imagem.url }}" width="60" alt="{{ servico.nome }}">{% endif %}</td>
+                    <td>{{ servico.nome }}</td>
+                    <td>{{ servico.descricao|truncatewords:12 }}</td>
+                    <td>R$ {{ servico.preco }}</td>
+                    <td>
+                        {% if servico.ativo %}
+                            <span class="badge badge-ativo">Ativo</span>
+                        {% else %}
+                            <span class="badge badge-inativo">Inativo</span>
+                        {% endif %}
+                    </td>
+                    <td class="acoes-tabela">
+                        <a class="btn btn-outline btn-sm" href="{% url 'editServicos' servico.id %}">Editar</a>
+                        <a class="btn btn-danger btn-sm" href="{% url 'delServicos' servico.id %}" onclick="return confirm('Excluir este serviço?');">Excluir</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="6" class="vazio">Nenhum serviço cadastrado.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <p style="margin-top:20px;">
+        <a href="{% url 'dashboard' %}">&larr; Voltar ao dashboard</a>
+    </p>
+
+{% endblock %}

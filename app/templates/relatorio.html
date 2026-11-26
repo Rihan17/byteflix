@@ -1,0 +1,84 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Relatórios | ByteFix{% endblock %}
+
+{% block conteudo %}
+
+    <h2 class="titulo-pagina">Relatórios de Serviços</h2>
+    <p class="subtitulo-pagina">Acompanhe os dados e a situação dos serviços cadastrados na plataforma.</p>
+
+    <div class="stat-grid">
+        <div class="stat-box">
+            <div class="valor">{{ servicos_ativos|add:servicos_inativos }}</div>
+            <div class="rotulo">Total cadastrados</div>
+        </div>
+        <div class="stat-box">
+            <div class="valor">{{ servicos_ativos }}</div>
+            <div class="rotulo">Serviços ativos</div>
+        </div>
+        <div class="stat-box">
+            <div class="valor">{{ servicos_inativos }}</div>
+            <div class="rotulo">Serviços inativos</div>
+        </div>
+        <div class="stat-box">
+            <div class="valor">{{ total_pedidos }}</div>
+            <div class="rotulo">Pedidos realizados</div>
+        </div>
+    </div>
+
+    <div class="cards-grid">
+        <div class="card">
+            <h4>Serviços por categoria</h4>
+            <canvas id="graficoCategorias"></canvas>
+        </div>
+        <div class="card">
+            <h4>Situação dos serviços</h4>
+            <canvas id="graficoStatus"></canvas>
+        </div>
+    </div>
+
+    {{ categorias_labels|json_script:"categorias" }}
+    {{ categorias_valores|json_script:"quantidade" }}
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+      const categorias = JSON.parse(document.getElementById('categorias').textContent);
+      const quantidade = JSON.parse(document.getElementById('quantidade').textContent);
+
+      new Chart(document.getElementById('graficoCategorias'), {
+          type: 'bar',
+          data: {
+              labels: categorias,
+              datasets: [{
+                  label: 'Serviços por categoria',
+                  data: quantidade,
+                  backgroundColor: '#16694e'
+              }]
+          },
+          options: { plugins: { legend: { display: false } } }
+      });
+
+      new Chart(document.getElementById('graficoStatus'), {
+          type: 'doughnut',
+          data: {
+              labels: ['Ativos', 'Inativos'],
+              datasets: [{
+                  data: [
+                      {{ servicos_ativos }},
+                      {{ servicos_inativos }}
+                  ],
+                  backgroundColor: [
+                      '#16694e',
+                      '#cccccc'
+                  ]
+              }]
+          }
+      });
+    </script>
+
+    <p style="margin-top:20px;">
+        <a href="{% url 'dashboard' %}">&larr; Voltar ao dashboard</a>
+    </p>
+
+{% endblock %}

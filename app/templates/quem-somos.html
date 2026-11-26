@@ -1,0 +1,50 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Quem Somos | ByteFix{% endblock %}
+
+{% block conteudo %}
+
+    <h2 class="titulo-pagina">Quem Somos</h2>
+    <p class="subtitulo-pagina">
+        Conheça a ByteFix e a equipe por trás do nosso atendimento.
+    </p>
+
+    <section class="secao">
+        <p>
+            A ByteFix nasceu da vontade de oferecer uma assistência técnica transparente,
+            sem termos técnicos difíceis de entender e sem cobrar por um diagnóstico que
+            deveria ser gratuito. Atendemos pessoas físicas e pequenas empresas, sempre
+            explicando o problema antes de qualquer reparo.
+        </p>
+    </section>
+
+    <section class="secao">
+        <h3>Nossa Equipe</h3>
+
+        {% if erro_supabase %}
+            <div class="aviso">
+                Não foi possível carregar os dados da equipe no momento. Tente novamente mais tarde.
+            </div>
+        {% endif %}
+
+        <div class="cards-grid">
+            {% for integrante in integrantes %}
+                <div class="equipe-card">
+                    {% if integrante.foto_url %}
+                        <img src="{{ integrante.foto_url }}" alt="Foto de {{ integrante.nome }}">
+                    {% else %}
+                        <img src="https://api.dicebear.com/7.x/initials/svg?seed={{ integrante.nome }}" alt="Foto de {{ integrante.nome }}">
+                    {% endif %}
+                    <h4>{{ integrante.nome }}</h4>
+                    <span class="cargo">{{ integrante.cargo }}</span>
+                    <p class="bio">{{ integrante.biografia }}</p>
+                </div>
+            {% empty %}
+                {% if not erro_supabase %}
+                    <p class="vazio">Nenhum integrante cadastrado ainda.</p>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+
+{% endblock %}

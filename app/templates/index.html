@@ -1,0 +1,54 @@
+{% extends 'template.html' %}
+
+{% block titulo %}ByteFix | Assistência Técnica{% endblock %}
+
+{% block conteudo %}
+
+    <section class="hero">
+        <h1>Bem-vindo à ByteFix!</h1>
+        <p>
+            Assistência técnica especializada em computadores, notebooks, celulares e
+            periféricos. Diagnóstico honesto, reparo rápido e peças de qualidade para
+            você voltar a usar seus equipamentos sem dor de cabeça.
+        </p>
+        <a class="btn btn-primary" href="{% url 'produtos' %}">Ver serviços e produtos</a>
+    </section>
+
+    <section class="secao">
+        <h3>O que é a ByteFix?</h3>
+        <p>
+            Somos uma assistência técnica que une experiência em hardware e software para
+            resolver desde um notebook lento até a troca de tela de um celular. Trabalhamos
+            com orçamento sem compromisso e só executamos o serviço depois da sua aprovação.
+        </p>
+    </section>
+
+    <section class="secao">
+        <h3>Por que escolher a ByteFix?</h3>
+        <div class="cards-grid">
+            <div class="card">
+                <h4>Diagnóstico Gratuito</h4>
+                <p>Avaliamos o equipamento e explicamos o problema antes de cobrar qualquer coisa.</p>
+            </div>
+            <div class="card">
+                <h4>Atendimento Rápido</h4>
+                <p>A maioria dos reparos simples fica pronta em até 48 horas.</p>
+            </div>
+            <div class="card">
+                <h4>Técnicos Especializados</h4>
+                <p>Equipe com experiência em notebooks, PCs, celulares e redes.</p>
+            </div>
+            <div class="card">
+                <h4>Garantia nos Serviços</h4>
+                <p>Toda peça trocada e todo serviço realizado sai com garantia.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="secao hero" style="padding: 28px 36px;">
+        <h3 style="color:white;">Precisa de ajuda com seu equipamento?</h3>
+        <p>Fale com a nossa equipe e conte o que está acontecendo.</p>
+        <a class="btn btn-primary" href="{% url 'add_contato' %}">Entrar em contato</a>
+    </section>
+
+{% endblock %}

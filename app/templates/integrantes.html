@@ -1,0 +1,54 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Gerenciar Equipe | ByteFix{% endblock %}
+
+{% block conteudo %}
+    <h2 class="titulo-pagina">Gerenciar Integrantes</h2>
+    <p class="subtitulo-pagina">Cadastre, consulte, edite e exclua os integrantes da equipe (dados no Supabase).</p>
+
+    {% if erro_supabase %}
+        <div class="aviso">Não foi possível carregar os dados da equipe no Supabase no momento.</div>
+    {% endif %}
+
+    <p style="text-align:right; margin-bottom: 16px;">
+        <a class="btn btn-primary" href="{% url 'addIntegrante' %}">+ Novo Integrante</a>
+    </p>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Foto</th>
+                    <th>Nome</th>
+                    <th>Cargo</th>
+                    <th>Biografia</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for integrante in integrantes %}
+                    <tr>
+                        <td>
+                            {% if integrante.foto_url %}
+                                <img src="{{ integrante.foto_url }}" width="50" alt="Foto de {{ integrante.nome }}">
+                            {% endif %}
+                        </td>
+                        <td>{{ integrante.nome }}</td>
+                        <td>{{ integrante.cargo }}</td>
+                        <td>{{ integrante.biografia|truncatewords:12 }}</td>
+                        <td class="acoes-tabela">
+                            <a class="btn btn-outline btn-sm" href="{% url 'editIntegrante' integrante.id %}">Editar</a>
+                            <a class="btn btn-danger btn-sm" href="{% url 'delIntegrante' integrante.id %}" onclick="return confirm('Excluir este integrante?');">Excluir</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5" class="vazio">Nenhum integrante cadastrado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <p style="margin-top:20px;">
+        <a href="{% url 'dashboard' %}">&larr; Voltar ao dashboard</a>
+    </p>
+{% endblock %}

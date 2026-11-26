@@ -1,0 +1,70 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Carrinho | ByteFix{% endblock %}
+
+{% block conteudo %}
+
+    <h2 class="titulo-pagina">Seu Carrinho</h2>
+    <p class="subtitulo-pagina">Revise os itens antes de finalizar a compra.</p>
+
+    <p style="margin-bottom:18px;">
+        <a class="btn btn-outline" href="{% url 'produtos' %}">&larr; Continuar comprando</a>
+    </p>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Produto / Serviço</th>
+                    <th>Origem</th>
+                    <th>Preço unitário</th>
+                    <th>Qtd.</th>
+                    <th>Subtotal</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in itens %}
+                    <tr>
+                        <td style="display:flex; align-items:center; gap:10px;">
+                            {% if item.imagem %}
+                                <img src="{{ item.imagem }}" width="44" alt="{{ item.nome }}" style="border-radius:6px;">
+                            {% endif %}
+                            {{ item.nome }}
+                        </td>
+                        <td>
+                            {% if item.origem == 'api' %}
+                                <span class="badge badge-inativo">Loja parceira</span>
+                            {% else %}
+                                <span class="badge badge-ativo">ByteFix</span>
+                            {% endif %}
+                        </td>
+                        <td>R$ {{ item.preco_unitario }}</td>
+                        <td>{{ item.quantidade }}</td>
+                        <td>R$ {{ item.subtotal }}</td>
+                        <td>
+                            <a class="btn btn-danger btn-sm" href="{% url 'remover_carrinho' item.chave %}" onclick="return confirm('Remover este item do carrinho?');">Remover</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="6" class="vazio">Seu carrinho está vazio.</td></tr>
+                {% endfor %}
+            </tbody>
+            {% if itens %}
+            <tfoot>
+                <tr>
+                    <td colspan="6" class="total-destaque">Total do carrinho: R$ {{ total }}</td>
+                </tr>
+            </tfoot>
+            {% endif %}
+        </table>
+    </div>
+
+    {% if itens %}
+        <form method="post" action="{% url 'finalizar_compra' %}" style="max-width:320px; margin: 24px auto 0;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-block">Finalizar Compra</button>
+        </form>
+    {% endif %}
+
+{% endblock %}

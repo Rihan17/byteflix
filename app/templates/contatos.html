@@ -1,0 +1,39 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Contatos | ByteFix{% endblock %}
+
+{% block conteudo %}
+    <h2 class="titulo-pagina">Nossos Contatos</h2>
+    <p class="subtitulo-pagina">Consulte e gerencie as mensagens recebidas pelo formulário de contato.</p>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Telefone</th>
+                    <th>Mensagem</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contato in contatos %}
+                    <tr>
+                        <td>{{ contato.nome }}</td>
+                        <td>{{ contato.email }}</td>
+                        <td>{{ contato.telefone }}</td>
+                        <td>{{ contato.mensagem }}</td>
+                        <td><a class="btn btn-danger btn-sm" href="{% url 'del_contato' contato.id %}" onclick="return confirm('Excluir esta mensagem?');">Excluir</a></td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5" class="vazio">Nenhum contato enviado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <p style="margin-top:20px;">
+        <a href="{% url 'dashboard' %}">&larr; Voltar ao dashboard</a>
+    </p>
+{% endblock %}
