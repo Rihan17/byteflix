@@ -10,22 +10,46 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Lê o arquivo .env (usado só no computador; no Render as variáveis são
+# cadastradas direto no painel).
+load_dotenv(BASE_DIR / '.env')
+
+# O Render define a variável RENDER automaticamente; localmente ela não existe.
+EM_PRODUCAO = 'RENDER' in os.environ
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_0#0pm4eku6^0v19!w)v87y4tn3aot!esvy^&uqeaps40%5=b1'
+# Em produção, defina SECRET_KEY nas variáveis de ambiente do Render.
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    'django-insecure-_0#0pm4eku6^0v19!w)v87y4tn3aot!esvy^&uqeaps40%5=b1'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = not EM_PRODUCAO
 
 ALLOWED_HOSTS = []
+
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+    CSRF_TRUSTED_ORIGINS = [f'https://{RENDER_EXTERNAL_HOSTNAME}']
+
+if EM_PRODUCAO:
+    # O Render termina o HTTPS antes de chegar no Django.
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 
 # Application definition
@@ -44,6 +68,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # serve o CSS/estáticos em produção
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -83,6 +108,13 @@ DATABASES = {
     }
 }
 
+# Se a variável DATABASE_URL existir (ex.: PostgreSQL do Render), ela substitui
+# o SQLite. Sem ela, continua usando o db.sqlite3 local.
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+
 
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
@@ -121,6 +153,15 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Pasta onde o collectstatic junta todos os estáticos (usada em produção)
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+if EM_PRODUCAO:
+    STORAGES = {
+        'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+        'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+    }
+
 #diretorio de upload de arquivos
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -138,6 +179,3 @@ DEFAULT_FROM_EMAIL = 'ByteFix Assistência Técnica <no-reply@bytefix.local>'
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/login/dashboard/"
 LOGOUT_REDIRECT_URL = "/login/"
-
-from dotenv import load_dotenv
-load_dotenv()
