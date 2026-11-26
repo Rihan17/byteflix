@@ -51,7 +51,7 @@ Perfil.objects.create(usuario=u, tipo_usuario="administrador")
 - **Quem Somos** *(nova)*: texto institucional + equipe vinda do Supabase (banco remoto).
 - **Produtos**: corrigido um bug que impedia a página de abrir; agora mostra
   os serviços/produtos do banco local e os produtos de uma API externa
-  (FakeStore API), **ambos com botão "Adicionar ao carrinho"**, visível só
+  (DummyJSON), **ambos com botão "Adicionar ao carrinho"**, visível só
   para quem está logado.
 - **Carrinho** *(novo)*: os produtos vão primeiro para um carrinho (guardado
   na sessão do usuário), mostrado no menu com a quantidade de itens. Na
@@ -82,7 +82,7 @@ Perfil.objects.create(usuario=u, tipo_usuario="administrador")
 
 ## Observações
 
-- As chamadas ao Supabase e à API externa (FakeStore) são protegidas com
+- As chamadas ao Supabase e à API externa (DummyJSON) são protegidas com
   tratamento de erro: se a internet ou o serviço estiver fora do ar, a página
   continua funcionando e mostra um aviso, em vez de quebrar.
 - Os dados de exemplo de Categoria/Serviço foram atualizados para refletir o

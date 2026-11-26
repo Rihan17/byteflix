@@ -10,7 +10,8 @@ from django.db.models import Count
 
 logger = logging.getLogger(__name__)
 
-API_LOJA = "https://fakestoreapi.com/products"
+API_LOJA = "https://dummyjson.com/products"
+CAMPOS_API = "id,title,description,price,thumbnail,category"
 CABECALHOS_API = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                   "(KHTML, like Gecko) Chrome/124.0 Safari/537.36",
@@ -18,16 +19,39 @@ CABECALHOS_API = {
 }
 
 
+def _normalizar_produto(dados):
+    return {
+        "id": dados.get("id"),
+        "title": dados.get("title", ""),
+        "description": dados.get("description", ""),
+        "price": dados.get("price") or 0,
+        "image": dados.get("thumbnail", ""),
+        "category": dados.get("category", ""),
+    }
+
+
 def _api_loja(caminho=""):
+    parametros = {"select": CAMPOS_API}
+    if not caminho:
+        parametros["limit"] = 20
+
     ultimo_erro = None
     for tentativa in (1, 2):
         try:
-            resposta = requests.get(f"{API_LOJA}{caminho}", headers=CABECALHOS_API, timeout=8)
+            resposta = requests.get(
+                f"{API_LOJA}{caminho}",
+                params=parametros,
+                headers=CABECALHOS_API,
+                timeout=8,
+            )
             resposta.raise_for_status()
-            return resposta.json()
-        except (requests.RequestException, ValueError) as erro:
+            dados = resposta.json()
+            if caminho:
+                return _normalizar_produto(dados) if dados.get("title") else None
+            return [_normalizar_produto(p) for p in dados.get("products", [])]
+        except (requests.RequestException, ValueError, AttributeError) as erro:
             ultimo_erro = erro
-            logger.error("FakeStore API falhou (%s, tentativa %s): %s: %s",
+            logger.error("API de produtos falhou (%s, tentativa %s): %s: %s",
                          caminho or "/products", tentativa, type(erro).__name__, erro)
     raise requests.RequestException(str(ultimo_erro))
 
