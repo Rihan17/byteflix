@@ -148,11 +148,18 @@ STATIC_URL = 'static/'
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-if EM_PRODUCAO:
-    STORAGES = {
-        'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
-        'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
-    }
+SUPABASE_BUCKET = os.environ.get('SUPABASE_BUCKET')
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'app.storage.SupabaseStorage' if SUPABASE_BUCKET
+        else 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage' if EM_PRODUCAO
+        else 'django.contrib.staticfiles.storage.StaticFilesStorage',
+    },
+}
 
 #diretorio de upload de arquivos
 MEDIA_URL = '/media/'
